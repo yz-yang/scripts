@@ -16,46 +16,46 @@ function get_bytes {
 # Speed is shown in KByte per second when greater or equal than 1 KByte per second.
 # This function should be called each second.
 
-function get_velocity {
-	value=$1
-	old_value=$2
-	now=$3
-
-	timediff=$(($now - $old_time))
-	velKB=$(echo "1000000000*($value-$old_value)/1024/$timediff" | bc)
-	if test "$velKB" -gt 1024
-	then
-		echo $(echo "scale=2; $velKB/1024" | bc)MB/s
-	else
-		echo ${velKB}KB/s
-	fi
-}
+#function get_velocity {
+#	value=$1
+#	old_value=$2
+#	now=$3
+#
+#	timediff=$(($now - $old_time))
+#	velKB=$(echo "1000000000*($value-$old_value)/1024/$timediff" | bc)
+#	if test "$velKB" -gt 1024
+#	then
+#		echo $(echo "scale=2; $velKB/1024" | bc)MB/s
+#	else
+#		echo ${velKB}KB/s
+#	fi
+#}
 
 # Get initial values
-get_bytes
-old_received_bytes=$received_bytes
-old_transmitted_bytes=$transmitted_bytes
-old_time=$now
-
-print_volume() {
-	volume="$(amixer get Master | tail -n1 | sed -r 's/.*\[(.*)%\].*/\1/')"
-	if test "$volume" -gt 0
-	then
-		echo -e "\uE05D${volume}"
-	else
-		echo -e "Mute"
-	fi
-}
+#get_bytes
+#old_received_bytes=$received_bytes
+#old_transmitted_bytes=$transmitted_bytes
+#old_time=$now
+#
+#print_volume() {
+#	volume="$(amixer get Master | tail -n1 | sed -r 's/.*\[(.*)%\].*/\1/')"
+#	if test "$volume" -gt 0
+#	then
+#		echo -e "\uE05D${volume}"
+#	else
+#		echo -e "Mute"
+#	fi
+#}
 
 print_mem(){
-	memfree=$(($(grep -m1 'MemAvailable:' /proc/meminfo | awk '{print $2}') / 1024))
+	memfree=$(($(grep -m1 'MemAvailable:' /proc/meminfo | awk '{print $2}') / 1024/1024))
 	echo -e "$memfree"
 }
 
-print_temp(){
-	test -f /sys/class/thermal/thermal_zone0/temp || return 0
-	echo $(head -c 2 /sys/class/thermal/thermal_zone0/temp)C
-}
+#print_temp(){
+#	test -f /sys/class/thermal/thermal_zone0/temp || return 0
+#	echo $(head -c 2 /sys/class/thermal/thermal_zone0/temp)C
+#}
 
 #!/bin/bash
 
@@ -116,7 +116,7 @@ print_bat(){
 		#echo -e "${charge}"
 	#fi
 	#echo "$(get_battery_charging_status) $(get_battery_combined_percent)%, $(get_time_until_charged )";
-	echo "$(get_battery_charging_status) $(get_battery_combined_percent)%, $(get_time_until_charged )";
+	echo "$(get_battery_charging_status) $(get_battery_combined_percent)%";
 }
 
 print_date(){
@@ -150,17 +150,17 @@ export IDENTIFIER="unicode"
 #. "$DIR/dwmbar-functions/dwm_ccurse.sh"
 #. "$DIR/dwmbar-functions/dwm_date.sh"
 
-get_bytes
+#get_bytes
 
 # Calculates speeds
-vel_recv=$(get_velocity $received_bytes $old_received_bytes $now)
-vel_trans=$(get_velocity $transmitted_bytes $old_transmitted_bytes $now)
+#vel_recv=$(get_velocity $received_bytes $old_received_bytes $now)
+#vel_trans=$(get_velocity $transmitted_bytes $old_transmitted_bytes $now)
 
-xsetroot -name "  💿 $(print_mem)M ⬇️ $vel_recv ⬆️ $vel_trans $(dwm_alsa) [ $(print_bat) ]$(show_record) $(print_date) "
+xsetroot -name "  💿 $(print_mem)G $(dwm_alsa) $(print_bat) $(print_date) "
 
 # Update old values to perform new calculations
-old_received_bytes=$received_bytes
-old_transmitted_bytes=$transmitted_bytes
+#old_received_bytes=$received_bytes
+#old_transmitted_bytes=$transmitted_bytes
 old_time=$now
 
 exit 0
